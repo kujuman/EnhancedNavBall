@@ -24,10 +24,16 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
     private GameObject _ghostPrograde;
     private GameObject _ghostRetrograde;
 
+    private GameObject _thrustPrograde;
+
+
     private static readonly Color _radialColour = new Color(0, 1, 0.958f);
     private static readonly Color _maneuverColour = new Color(0, 0.1137f, 1, _manueverAlpha);
     private static readonly Color _normalColour = new Color(0.930f, 0, 1);
-    private static readonly Color _progradeColour = new Color(0.84f, 0.98f, 0); 
+    private static readonly Color _progradeColour = new Color(0.84f, 0.98f, 0);
+
+    ////////////////////////////////////////////////////////////////////////
+    private static readonly Color _thrustColor = new Color(0,0,0);
 
     private CalculationStore _calculationStore;
 
@@ -189,6 +195,16 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
             "radialMinus",
             _vectorSize);
 
+
+
+        ////////////////////////////////////////////////////////////////////////
+        _thrustPrograde = Utilities.CreateSimplePlane(
+            "thrustPrograde",
+            _vectorSize);
+
+
+
+
         SetupObject(
             _normalPlus,
             new Vector2(0.0f, 0.0f),
@@ -211,6 +227,13 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
             _radialMinus,
             new Vector2(0.0f, _graphicOffset),
             _radialColour,
+            _vectorsPivotTransform);
+
+        ////////////////////////////////////////////////////////////////////////
+        SetupObject(
+            _thrustPrograde,
+            new Vector2(_graphicOffset, _graphicOffset * 2),
+            _thrustColor,
             _vectorsPivotTransform);
     }
 
@@ -440,6 +463,9 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
         TestVisibility(_radialMinus);
         TestVisibility(_normalPlus);
         TestVisibility(_normalMinus);
+
+        ////////////////////////////////////////////////////////////////////////
+        TestVisibility(_thrustPrograde);
     }
 
     private void TestVisibility(GameObject o)
@@ -491,6 +517,10 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
 
         _radialMinus.transform.localPosition = -_calculationStore.RadialPlus * _navBallProgradeMagnatude;
         _normalMinus.transform.localPosition = -_calculationStore.NormalPlus * _navBallProgradeMagnatude;
+
+
+        ////////////////////////////////////////////////////////////////////////
+        _thrustPrograde.transform.localPosition = _calculationStore.ThrustPlus * _navBallProgradeMagnatude;
         
         //Utilities.DebugLog(LogLevel.Diagnostic,
         //    string.Format("MechJeb Calc: \n{0}\n{1}\n{2}\n{3}\n{4}\n{5}",
