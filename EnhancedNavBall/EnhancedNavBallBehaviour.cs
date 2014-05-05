@@ -465,7 +465,7 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
         TestVisibility(_normalMinus);
 
         ////////////////////////////////////////////////////////////////////////
-        TestVisibility(_thrustPrograde);
+        //TestVisibility(_thrustPrograde);
     }
 
     private void TestVisibility(GameObject o)
