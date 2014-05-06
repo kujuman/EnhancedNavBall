@@ -52,20 +52,17 @@ public class CalculationStore
                 mefx.OnCenterOfThrustQuery(CoTQ);
             }
         }
-        //Debug.Log("CoTQ 2");
-        //Debug.Log("CoTQ.thrust = " + CoTQ.thrust.ToString("F2"));
-        //Debug.Log("CoTQ.dir = " + CoTQ.dir.ToString());
-        //Debug.Log("CoTQ.pos = " + CoTQ.pos.ToString());
-        //Debug.Log("Post CoTQ");
-        //CoTQ.dir = (Vector3d)vessel.transform.InverseTransformDirection((Vector3d)CoTQ.dir); //uses root part transform
         CoTQ.dir = (Vector3d)vessel.ReferenceTransform.InverseTransformDirection((Vector3d)CoTQ.dir);
-        CoTQ.dir.y *= -1;
-        Vector3 dir = CoTQ.dir;
-        dir.x = -1 * dir.x;
-        dir.y = CoTQ.dir.z;
-        dir.z = CoTQ.dir.y;
-        Debug.Log(CoTQ.dir.ToString("F4"));
-        Debug.Log(dir.ToString("F4"));
+        //Debug.Log("CoTQ.dir " + CoTQ.dir.ToString());
+        Vector3 dirInitial = avgThrustDirection(vessel).normalized;
+        dirInitial = (Vector3d)vessel.ReferenceTransform.InverseTransformDirection(dirInitial);
+        //Debug.Log("dirInitial " + dirInitial.ToString());
+        Vector3 dir = dirInitial;
+        dir.x = -1 * dirInitial.x;
+        dir.y = dirInitial.z;
+        dir.z = -1 * dirInitial.y;
+        //Debug.Log(CoTQ.dir.ToString("F4"));
+        //Debug.Log(dir.ToString("F4"));
         ThrustPlus = dir;
 
 
@@ -82,4 +79,69 @@ public class CalculationStore
             ManeuverPresent = false;
         }
     }
+
+
+    ////////////////////////////////////////////////////////////////////////
+    public Vector3d avgThrustDirection(Vessel v)
+    {
+        Vector3 dir = new Vector3();
+
+        ModuleEngines me;
+        ModuleEnginesFX mefx;
+
+        Vector3 engineAvgTransform;
+
+        foreach (Part p in v.parts)
+        {
+            engineAvgTransform = new Vector3();
+            me = new ModuleEngines();
+
+            if (p.Modules.Contains("ModuleEngines"))
+            {
+                me = p.GetComponent<ModuleEngines>();
+
+                foreach (Transform t in me.thrustTransforms)
+                {
+                    engineAvgTransform += t.forward;
+                }
+                engineAvgTransform.Normalize();
+                engineAvgTransform = engineAvgTransform * me.finalThrust;
+
+                goto AddThrustComponent;
+            }
+
+            if (p.Modules.Contains("ModuleEnginesFX"))
+            {
+                mefx = p.GetComponent<ModuleEnginesFX>();
+
+                foreach (Transform t in mefx.thrustTransforms)
+                {
+                    engineAvgTransform += t.forward;
+                }
+
+                engineAvgTransform.Normalize();
+                engineAvgTransform = engineAvgTransform * mefx.finalThrust;
+
+                goto AddThrustComponent;
+            }
+            else
+                goto NextPart;
+
+        AddThrustComponent:
+            dir += engineAvgTransform;
+
+    NextPart:
+        ;
+        }
+
+        return dir;
+    }
+    private void pEI(string engName , float thrust, Vector3 dir)
+    {
+        Debug.Log("=========" + engName + "=========");
+        Debug.Log("Thrust = " + thrust + " kN");
+        Debug.Log(dir.ToString());
+    }
+
+
 }
