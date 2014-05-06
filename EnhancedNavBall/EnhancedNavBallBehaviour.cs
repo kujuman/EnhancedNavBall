@@ -24,6 +24,7 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
     private GameObject _ghostPrograde;
     private GameObject _ghostRetrograde;
 
+    //kujuman
     private GameObject _thrustPrograde;
 
 
@@ -32,8 +33,8 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
     private static readonly Color _normalColour = new Color(0.930f, 0, 1);
     private static readonly Color _progradeColour = new Color(0.84f, 0.98f, 0);
 
-    ////////////////////////////////////////////////////////////////////////
-    private static readonly Color _thrustColor = new Color(0,0,0);
+    //kujuman
+    private static readonly Color _thrustColor = new Color(1, 0.2f, 0); //a red-orange color
 
     private CalculationStore _calculationStore;
 
@@ -197,10 +198,10 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
 
 
 
-        ////////////////////////////////////////////////////////////////////////
+        //kujuman
         _thrustPrograde = Utilities.CreateSimplePlane(
             "thrustPrograde",
-            _vectorSize);
+            _vectorSize * .4f);
 
 
 
@@ -229,10 +230,10 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
             _radialColour,
             _vectorsPivotTransform);
 
-        ////////////////////////////////////////////////////////////////////////
+        //kujuman
         SetupObject(
             _thrustPrograde,
-            new Vector2(_graphicOffset, _graphicOffset * 2),
+            new Vector2(_graphicOffset, _graphicOffset), //uses the radialPlus icon
             _thrustColor,
             _vectorsPivotTransform);
     }
@@ -464,8 +465,9 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
         TestVisibility(_normalPlus);
         TestVisibility(_normalMinus);
 
-        ////////////////////////////////////////////////////////////////////////
-        if (_calculationStore.ThrustPlus.z > 0.99f)
+        //kujuman
+        if (_calculationStore.ThrustPlus.z > 0.995f || //remove thrust marker if closely aligned (0.995 is not a final value) with "Control from here"
+            _calculationStore.ThrustPlus.magnitude < .05f) //or if under 1/20 kN of total thrust
             _thrustPrograde.SetActive(false);
         else
             _thrustPrograde.SetActive(true);
@@ -522,7 +524,7 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
         _normalMinus.transform.localPosition = -_calculationStore.NormalPlus * _navBallProgradeMagnatude;
 
 
-        ////////////////////////////////////////////////////////////////////////
+        //kujuman
         _thrustPrograde.transform.localPosition = _calculationStore.ThrustPlus * _navBallProgradeMagnatude;
         
         //Utilities.DebugLog(LogLevel.Diagnostic,

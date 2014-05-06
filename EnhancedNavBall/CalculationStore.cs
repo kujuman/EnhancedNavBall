@@ -9,9 +9,8 @@ public class CalculationStore
     public Vector3d NormalPlus;
     public Vector3d ManeuverPlus = Vector3d.zero;
 
-    ////////////////////////////////////////////////////////////////////////
+    //kujuman
     public Vector3d ThrustPlus;
-    CenterOfThrustQuery CoTQ;
 
     public bool ManeuverPresent;
 
@@ -33,36 +32,17 @@ public class CalculationStore
         ProgradeOrbit = gymbal * velocityVesselOrbitUnit;
         ProgradeSurface = gymbal * velocityVesselSurfaceUnit;
 
-        ////////////////////////////////////////////////////////////////////////
-        Debug.Log("Before CoTQ");
-        CoTQ = new CenterOfThrustQuery();
-        ModuleEngines me;
-        ModuleEnginesFX mefx;
-        foreach (Part p in vessel.parts)
-        {
-            if (p.Modules.Contains("ModuleEngines"))
-            {
-                me = p.GetComponent<ModuleEngines>();
-                me.OnCenterOfThrustQuery(CoTQ);
-            }
 
-            if (p.Modules.Contains("ModuleEnginesFX"))
-            {
-                mefx = p.GetComponent<ModuleEnginesFX>();
-                mefx.OnCenterOfThrustQuery(CoTQ);
-            }
-        }
-        CoTQ.dir = (Vector3d)vessel.ReferenceTransform.InverseTransformDirection((Vector3d)CoTQ.dir);
-        //Debug.Log("CoTQ.dir " + CoTQ.dir.ToString());
+
+        //kujuman
         Vector3 dirInitial = avgThrustDirection(vessel).normalized;
         dirInitial = (Vector3d)vessel.ReferenceTransform.InverseTransformDirection(dirInitial);
-        //Debug.Log("dirInitial " + dirInitial.ToString());
+        //Direction of vessel-wide thrust vector is now in the "Control From Here" reference frame
+        //Do some jiggling to align axes with navball
         Vector3 dir = dirInitial;
         dir.x = -1 * dirInitial.x;
         dir.y = dirInitial.z;
         dir.z = -1 * dirInitial.y;
-        //Debug.Log(CoTQ.dir.ToString("F4"));
-        //Debug.Log(dir.ToString("F4"));
         ThrustPlus = dir;
 
 
@@ -81,7 +61,13 @@ public class CalculationStore
     }
 
 
-    ////////////////////////////////////////////////////////////////////////
+    //kujuman
+    /// <summary>
+    /// This method returns a [reference frame] vector of the average of all thrust from active ModuleEngines and ModuleEnginesFX. Magnitude is net thrust in kN.
+    /// Assumes no part contains more than one total ModuleEngines or ModuleEnginesFX
+    /// </summary>
+    /// <param name="v">the vessel</param>
+    /// <returns></returns>
     public Vector3d avgThrustDirection(Vessel v)
     {
         Vector3 dir = new Vector3();
@@ -136,6 +122,12 @@ public class CalculationStore
 
         return dir;
     }
+    /// <summary>
+    /// Use to print formatted Debug.Log messeges.
+    /// </summary>
+    /// <param name="engName">Some identifier</param>
+    /// <param name="thrust">thrust in kN</param>
+    /// <param name="dir">Direction of thrust</param>
     private void pEI(string engName , float thrust, Vector3 dir)
     {
         Debug.Log("=========" + engName + "=========");
