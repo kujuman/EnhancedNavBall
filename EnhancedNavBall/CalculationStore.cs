@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using KSP;
+using System;
+using System.Linq;
 
 public class CalculationStore
 {
@@ -82,23 +84,24 @@ public class CalculationStore
             engineAvgTransform = new Vector3();
             me = new ModuleEngines();
 
-            if (p.Modules.Contains("ModuleEngines"))
+            if (p.Modules.OfType<ModuleEngines>().FirstOrDefault())
             {
-                me = p.GetComponent<ModuleEngines>();
+                me = p.Modules.OfType<ModuleEngines>().FirstOrDefault();
 
                 foreach (Transform t in me.thrustTransforms)
                 {
                     engineAvgTransform += t.forward;
                 }
                 engineAvgTransform.Normalize();
+                //pEI(me.name, me.finalThrust, engineAvgTransform);
                 engineAvgTransform = engineAvgTransform * me.finalThrust;
 
                 goto AddThrustComponent;
             }
 
-            if (p.Modules.Contains("ModuleEnginesFX"))
+            if (p.Modules.OfType<ModuleEnginesFX>().FirstOrDefault())
             {
-                mefx = p.GetComponent<ModuleEnginesFX>();
+                mefx = p.Modules.OfType<ModuleEnginesFX>().FirstOrDefault();
 
                 foreach (Transform t in mefx.thrustTransforms)
                 {

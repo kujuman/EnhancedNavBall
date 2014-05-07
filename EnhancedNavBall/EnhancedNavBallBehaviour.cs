@@ -466,7 +466,7 @@ public class EnhancedNavBallBehaviour : MonoBehaviour
         TestVisibility(_normalMinus);
 
         //kujuman
-        if (_calculationStore.ThrustPlus.z > 0.995f || //remove thrust marker if closely aligned (0.995 is not a final value) with "Control from here"
+        if (_calculationStore.ThrustPlus.z > 0.998f || //remove thrust marker if closely aligned (0.995 is not a final value) with "Control from here"
             _calculationStore.ThrustPlus.magnitude < .05f) //or if under 1/20 kN of total thrust
             _thrustPrograde.SetActive(false);
         else
